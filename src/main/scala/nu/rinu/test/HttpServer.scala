@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.handler.AbstractHandler
 import org.eclipse.jetty.server.{ Request => JRequest }
-import org.apache.http.HttpRequest
 import scala.collection.JavaConverters._
 
 /**
