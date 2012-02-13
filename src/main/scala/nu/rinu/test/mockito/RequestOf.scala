@@ -22,7 +22,7 @@ class RequestOf(url: String, params: Map[String, Seq[String]] = Map(), headers: 
     if (params.isEmpty) {
       true
     } else {
-      params == request.params
+      params.forall(kv => request.params(kv._1) == kv._2)
     }
 
   private def matchesHeaders(request: Request) =
