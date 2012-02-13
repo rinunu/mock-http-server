@@ -36,12 +36,13 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
     source.getLines.mkString("")
   }
 
-  def post(url: String, params: Map[String, String]) = {
+  def post(url: String, params: Map[String, String] = Map(), header: Map[String, String] = Map()) = {
     val httppost = new HttpPost(server.url + url)
 
     import scala.collection.JavaConverters._
     val params2 = params.map(x => new BasicNameValuePair(x._1, x._2)).toSeq.asJava
     httppost.setEntity(new UrlEncodedFormEntity(params2, HTTP.UTF_8));
+    header.foreach(h => httppost.addHeader(h._1, h._2))
 
     val response = httpclient.execute(httppost)
     val entity = response.getEntity
@@ -127,6 +128,20 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
     assert(response.getStatusLine.getStatusCode === 500)
 
     verify(serverHandler).get(requestOf("/test/test2"))
+  }
+
+  test("request header を stub/verify できる") {
+    when(serverHandler.post(requestOf("/test", header = Map("H1" -> Seq("V2"))))).thenReturn("result2")
+    when(serverHandler.post(requestOf("/test", header = Map("H1" -> Seq("V1"))))).thenReturn("result1")
+
+    // client code
+    assert(post("/test", header = Map("H1" -> "V1")) === "result1")
+    assert(post("/test", header = Map("H1" -> "V2")) === "result2")
+    assert(post("/test", header = Map("H1" -> "V2")) === "result2")
+  }
+
+  test("response header を stub できる") {
+    pending
   }
 
   test("param の部分マッチ") {

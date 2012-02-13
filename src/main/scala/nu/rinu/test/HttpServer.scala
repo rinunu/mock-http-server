@@ -38,7 +38,8 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
         case "GET" => (Method.Get, handler.get _)
         case "POST" => (Method.Post, handler.post _)
       }
-      val req = new Request(method, request.getRequestURI, request.getParameterMap)
+
+      val req = new Request(method, request.getRequestURI, request.getParameterMap, header = header(request))
       val res = f(req)
 
       if (res != null) {
@@ -54,6 +55,14 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
   def stop() {
     impl.stop
     impl.join
+  }
+
+  private def header(request: HttpServletRequest): Map[String, Seq[String]] = {
+    val tuples = for (name <- request.getHeaderNames.asScala) yield {
+      (name,
+        for (value <- request.getHeaders(name).asScala.toSeq) yield value)
+    }
+    tuples.toMap
   }
 }
 
@@ -71,7 +80,7 @@ case class Response(statusCode: Int, body: String, header: Map[String, String] =
  * 設計
  * HttpServletRequest は verify のタイミングでアクセス出来なかったため、 immutable な独自のオブジェクトとする
  */
-case class Request(method: Method.Value, url: String, params: Map[String, Seq[String]] = Map(), header: Map[String, String] = Map()) {
+case class Request(method: Method.Value, url: String, params: Map[String, Seq[String]] = Map(), header: Map[String, Seq[String]] = Map()) {
 }
 
 object Response {
