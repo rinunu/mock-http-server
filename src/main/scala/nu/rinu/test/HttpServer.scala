@@ -6,6 +6,7 @@ import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.handler.AbstractHandler
 import org.eclipse.jetty.server.{ Request => JRequest }
 import scala.collection.JavaConverters._
+import org.slf4j.LoggerFactory
 
 /**
  * モック用途を想定した HttpServer
@@ -22,6 +23,8 @@ import scala.collection.JavaConverters._
  *  - TODO response を delay できるとうれしい？
  */
 class HttpServer(port: Int, var handler: HttpServerHandler = null) {
+  val logger = LoggerFactory.getLogger(classOf[HttpServer])
+
   val impl = new Server(port)
   impl.setStopAtShutdown(true)
 
@@ -39,10 +42,13 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
         case "POST" => (Method.Post, handler.post _)
       }
 
+      logger.debug("request: " + request.getRequestURI)
       val req = new Request(method, request.getRequestURI, request.getParameterMap, headers = headers(request))
       val res = f(req)
 
       if (res != null) {
+        logger.debug("response: %d".format(res.statusCode))
+
         response.getWriter.append(res.body)
         response.setStatus(res.statusCode)
         for {
@@ -53,6 +59,8 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
         }
 
         baseRequest.setHandled(true)
+      } else {
+        logger.debug("response: 404")
       }
     }
   })

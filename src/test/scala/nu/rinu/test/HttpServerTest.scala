@@ -109,6 +109,13 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
     assert(post("/test", Map("k1" -> "v2")) === "result2")
   }
 
+  test("post のパラメータを when 時に指定しない場合、パラメータチェックは行わないこと") {
+    when(serverHandler.post(requestOf("/test"))).thenReturn("result1")
+
+    // client code
+    assert(post("/test", Map("k1" -> "v1")) === "result1")
+  }
+
   test("複数回のリクエストを stub/verify できる") {
     when(serverHandler.get(requestOf("/test1"))).thenReturn("result1")
     when(serverHandler.get(requestOf("/test2"))).thenReturn("result2")
@@ -164,6 +171,14 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
   }
 
   test("param の部分マッチ") {
+    pending
+  }
+
+  test("serverHandler を指定しない場合、何も怒らず、ちゃんと動くこと") {
+    pending
+  }
+
+  test("通信内容をログで確認できること") {
     pending
   }
 

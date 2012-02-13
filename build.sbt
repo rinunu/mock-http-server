@@ -8,7 +8,8 @@ libraryDependencies ++= {
     "org.scalatest" %% "scalatest" % "1.6.1" % "test",
     "junit" % "junit" % "4.10" % "test",
     "org.mockito" % "mockito-all" % "1.9.0" % "test;compile",
-    "org.apache.httpcomponents" % "httpclient" % "4.1.2" % "test"
+    "org.apache.httpcomponents" % "httpclient" % "4.1.2" % "test",
+    "ch.qos.logback" % "logback-classic" % "1.0.0" % "test;compile"
     )
 }
 
