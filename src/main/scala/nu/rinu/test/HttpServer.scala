@@ -30,6 +30,8 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
 
   def url = "http://localhost:" + port
 
+  logger.debug("start: " + url)
+
   private implicit def toScala(from: java.util.Map[String, Array[String]]): Map[String, Seq[String]] = {
     // TODO これもっとシンプルにできないかなぁ
     from.asScala.toMap.map(a => (a._1, a._2.toSeq))
