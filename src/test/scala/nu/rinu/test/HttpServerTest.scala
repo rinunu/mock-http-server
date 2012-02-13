@@ -24,6 +24,8 @@ import org.apache.http.message.BasicNameValuePair
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.protocol.HTTP
 import nu.rinu.test.mockito.RequestOf._
+import scala.collection.JavaConverters._
+import org.apache.http.Header
 
 @RunWith(classOf[JUnitRunner])
 class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach {
@@ -39,7 +41,6 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
   def post(url: String, params: Map[String, String] = Map(), header: Map[String, String] = Map()) = {
     val httppost = new HttpPost(server.url + url)
 
-    import scala.collection.JavaConverters._
     val params2 = params.map(x => new BasicNameValuePair(x._1, x._2)).toSeq.asJava
     httppost.setEntity(new UrlEncodedFormEntity(params2, HTTP.UTF_8));
     header.foreach(h => httppost.addHeader(h._1, h._2))
@@ -140,7 +141,25 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
     assert(post("/test", header = Map("H1" -> "V2")) === "result2")
   }
 
+  def toMap(headers: Array[Header]) =
+    headers.map(a => (a.getName, a.getValue)).toMap
+
   test("response header を stub できる") {
+    when(serverHandler.post(requestOf("/test"))).thenReturn(Response(body = "result2", header = Map("H1" -> Seq("V1"), "H2" -> Seq("V2"))))
+
+    // client code
+    val httppost = new HttpPost(server.url + "/test")
+
+    val response = httpclient.execute(httppost)
+    val entity = response.getEntity
+    val headers = toMap(response.getAllHeaders)
+
+    assert(headers.exists(_ == ("H1", "V1")), "H1 を含む")
+    assert(headers.exists(_ == ("H2", "V2")), "H2 を含む")
+    assert(!headers.exists(_ == ("H3", "V3")), "H3 を含まない")
+  }
+
+  test("pending header => headers") {
     pending
   }
 

@@ -45,6 +45,12 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
       if (res != null) {
         response.getWriter.append(res.body)
         response.setStatus(res.statusCode)
+        for {
+          header <- res.header
+          value <- header._2
+        } {
+          response.addHeader(header._1, value)
+        }
 
         baseRequest.setHandled(true)
       }
@@ -73,7 +79,7 @@ object Method extends Enumeration {
   val Delete = Value("delete")
 }
 
-case class Response(statusCode: Int, body: String, header: Map[String, String] = Map()) {
+case class Response(statusCode: Int = 200, body: String = "", header: Map[String, Seq[String]] = Map()) {
 }
 
 /**
