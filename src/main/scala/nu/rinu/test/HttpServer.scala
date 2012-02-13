@@ -39,14 +39,14 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
         case "POST" => (Method.Post, handler.post _)
       }
 
-      val req = new Request(method, request.getRequestURI, request.getParameterMap, header = header(request))
+      val req = new Request(method, request.getRequestURI, request.getParameterMap, headers = headers(request))
       val res = f(req)
 
       if (res != null) {
         response.getWriter.append(res.body)
         response.setStatus(res.statusCode)
         for {
-          header <- res.header
+          header <- res.headers
           value <- header._2
         } {
           response.addHeader(header._1, value)
@@ -63,7 +63,7 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
     impl.join
   }
 
-  private def header(request: HttpServletRequest): Map[String, Seq[String]] = {
+  private def headers(request: HttpServletRequest): Map[String, Seq[String]] = {
     val tuples = for (name <- request.getHeaderNames.asScala) yield {
       (name,
         for (value <- request.getHeaders(name).asScala.toSeq) yield value)
@@ -79,14 +79,14 @@ object Method extends Enumeration {
   val Delete = Value("delete")
 }
 
-case class Response(statusCode: Int = 200, body: String = "", header: Map[String, Seq[String]] = Map()) {
+case class Response(statusCode: Int = 200, body: String = "", headers: Map[String, Seq[String]] = Map()) {
 }
 
 /**
  * 設計
  * HttpServletRequest は verify のタイミングでアクセス出来なかったため、 immutable な独自のオブジェクトとする
  */
-case class Request(method: Method.Value, url: String, params: Map[String, Seq[String]] = Map(), header: Map[String, Seq[String]] = Map()) {
+case class Request(method: Method.Value, url: String, params: Map[String, Seq[String]] = Map(), headers: Map[String, Seq[String]] = Map()) {
 }
 
 object Response {

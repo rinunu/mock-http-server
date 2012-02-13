@@ -38,12 +38,12 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
     source.getLines.mkString("")
   }
 
-  def post(url: String, params: Map[String, String] = Map(), header: Map[String, String] = Map()) = {
+  def post(url: String, params: Map[String, String] = Map(), headers: Map[String, String] = Map()) = {
     val httppost = new HttpPost(server.url + url)
 
     val params2 = params.map(x => new BasicNameValuePair(x._1, x._2)).toSeq.asJava
     httppost.setEntity(new UrlEncodedFormEntity(params2, HTTP.UTF_8));
-    header.foreach(h => httppost.addHeader(h._1, h._2))
+    headers.foreach(h => httppost.addHeader(h._1, h._2))
 
     val response = httpclient.execute(httppost)
     val entity = response.getEntity
@@ -132,20 +132,20 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
   }
 
   test("request header を stub/verify できる") {
-    when(serverHandler.post(requestOf("/test", header = Map("H1" -> Seq("V2"))))).thenReturn("result2")
-    when(serverHandler.post(requestOf("/test", header = Map("H1" -> Seq("V1"))))).thenReturn("result1")
+    when(serverHandler.post(requestOf("/test", headers = Map("H1" -> Seq("V2"))))).thenReturn("result2")
+    when(serverHandler.post(requestOf("/test", headers = Map("H1" -> Seq("V1"))))).thenReturn("result1")
 
     // client code
-    assert(post("/test", header = Map("H1" -> "V1")) === "result1")
-    assert(post("/test", header = Map("H1" -> "V2")) === "result2")
-    assert(post("/test", header = Map("H1" -> "V2")) === "result2")
+    assert(post("/test", headers = Map("H1" -> "V1")) === "result1")
+    assert(post("/test", headers = Map("H1" -> "V2")) === "result2")
+    assert(post("/test", headers = Map("H1" -> "V2")) === "result2")
   }
 
   def toMap(headers: Array[Header]) =
     headers.map(a => (a.getName, a.getValue)).toMap
 
   test("response header を stub できる") {
-    when(serverHandler.post(requestOf("/test"))).thenReturn(Response(body = "result2", header = Map("H1" -> Seq("V1"), "H2" -> Seq("V2"))))
+    when(serverHandler.post(requestOf("/test"))).thenReturn(Response(body = "result2", headers = Map("H1" -> Seq("V1"), "H2" -> Seq("V2"))))
 
     // client code
     val httppost = new HttpPost(server.url + "/test")

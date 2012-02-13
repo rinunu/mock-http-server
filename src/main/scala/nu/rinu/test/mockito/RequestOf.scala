@@ -7,16 +7,16 @@ import nu.rinu.test.Request
 /**
  * mockito 用の Matcher
  *
- * @param header 指定したヘッダーがすべて、リクエストに含まれているならマッチする
+ * @param headers 指定したヘッダーがすべて、リクエストに含まれているならマッチする
  */
-class RequestOf(url: String, params: Map[String, Seq[String]] = Map(), header: Map[String, Seq[String]] = Map()) extends ArgumentMatcher[Request] {
+class RequestOf(url: String, params: Map[String, Seq[String]] = Map(), headers: Map[String, Seq[String]] = Map()) extends ArgumentMatcher[Request] {
   def matches(a: Any) = {
     val request = a.asInstanceOf[Request]
 
     request != null &&
       request.url == url &&
       matchesParams(request) &&
-      matchesHeader(request)
+      matchesHeaders(request)
   }
   private def matchesParams(request: Request) =
     if (params.isEmpty) {
@@ -25,15 +25,15 @@ class RequestOf(url: String, params: Map[String, Seq[String]] = Map(), header: M
       params == request.params
     }
 
-  private def matchesHeader(request: Request) =
-    if (header.isEmpty) {
+  private def matchesHeaders(request: Request) =
+    if (headers.isEmpty) {
       true
     } else {
-      header.forall(kv => request.header(kv._1) == kv._2)
+      headers.forall(kv => request.headers(kv._1) == kv._2)
     }
 
 }
 
 object RequestOf {
-  def requestOf(url: String, params: Map[String, Seq[String]] = Map(), header: Map[String, Seq[String]] = Map()) = argThat(new RequestOf(url, params, header))
+  def requestOf(url: String, params: Map[String, Seq[String]] = Map(), headers: Map[String, Seq[String]] = Map()) = argThat(new RequestOf(url, params, headers))
 }
