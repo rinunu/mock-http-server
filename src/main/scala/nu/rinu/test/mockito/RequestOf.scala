@@ -7,6 +7,7 @@ import nu.rinu.test.Request
 /**
  * mockito 用の Matcher
  *
+ * @param params 指定したパラメータがすべて、リクエストに含まれているならマッチする
  * @param headers 指定したヘッダーがすべて、リクエストに含まれているならマッチする
  */
 class RequestOf(url: String, params: Set[(String, String)], headers: Set[(String, String)]) extends ArgumentMatcher[Request] {

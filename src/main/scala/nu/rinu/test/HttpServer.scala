@@ -19,8 +19,6 @@ import org.slf4j.LoggerFactory
  *    - mockito 等とうまく連携できるといい
  *  - ナマの HTTP も確認できる
  *  - テスト中は起動しっぱなしにできる
- *
- *  - TODO response を delay できるとうれしい？
  */
 class HttpServer(port: Int, var handler: HttpServerHandler = null) {
   val logger = LoggerFactory.getLogger(classOf[HttpServer])
@@ -105,6 +103,9 @@ object Response {
 }
 
 /**
+ * HTTP リクエストを実際に処理する
+ *
+ * モックにすることを想定している
  */
 trait HttpServerHandler {
   def get(request: Request): Response
