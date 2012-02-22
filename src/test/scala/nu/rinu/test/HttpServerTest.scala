@@ -158,7 +158,8 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
     headers.map(a => (a.getName, a.getValue)).toMap
 
   test("response header を stub できる") {
-    when(serverHandler.post(requestOf("/test"))).thenReturn(Response(body = "result2", headers = Map("H1" -> Seq("V1"), "H2" -> Seq("V2"))))
+    when(serverHandler.post(requestOf("/test"))).thenReturn(
+      Response(body = "result2", headers = Set("H1" -> "V1", "H2" -> "V2")))
 
     // client code
     val httppost = new HttpPost(server.url + "/test")

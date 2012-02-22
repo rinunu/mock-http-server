@@ -51,11 +51,8 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
 
         response.getWriter.append(res.body)
         response.setStatus(res.statusCode)
-        for {
-          header <- res.headers
-          value <- header._2
-        } {
-          response.addHeader(header._1, value)
+        for (h <- res.headers) {
+          response.addHeader(h._1, h._2)
         }
 
         baseRequest.setHandled(true)
@@ -94,7 +91,7 @@ object Method extends Enumeration {
 case class Request(method: Method.Value, url: String, params: Map[String, Seq[String]] = Map(), headers: Map[String, Seq[String]] = Map()) {
 }
 
-case class Response(statusCode: Int = 200, body: String = "", headers: Map[String, Seq[String]] = Map()) {
+case class Response(statusCode: Int = 200, body: String = "", headers: Set[(String, String)] = Set()) {
 }
 
 object Response {
