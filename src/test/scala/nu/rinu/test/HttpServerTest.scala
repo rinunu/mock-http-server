@@ -67,28 +67,26 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
     server.stop()
   }
 
-  def fixture = new {
-  }
-
   test("get を stub/verify できる") {
-    when(serverHandler.get(requestOf("/test/test2"))).thenReturn("testResult")
+    when(serverHandler.get(requestOf("/test"))).thenReturn("body0")
 
     // client code
-    assert(get("/test/test2") === "testResult")
+    assert(get("/test") === "body0")
 
-    verify(serverHandler).get(requestOf("/test/test2"))
+    verify(serverHandler).get(requestOf("/test"))
   }
 
   test("パラメータを stub/verify できる") {
-    when(serverHandler.get(requestOf("/test", params = Map("k1" -> Seq("v1"))))).thenReturn("result1")
-    when(serverHandler.get(requestOf("/test", params = Map("k1" -> Seq("v2"))))).thenReturn("result2")
+    // パラメータに
+    when(serverHandler.get(requestOf("/test", params = Set("p0" -> "v0")))).thenReturn("result0")
+    when(serverHandler.get(requestOf("/test", params = Set("p0" -> "v1")))).thenReturn("result1")
 
     // client code
-    assert(get("/test?k1=v1") === "result1")
-    assert(get("/test?k1=v2") === "result2")
+    assert(get("/test?p0=v0") === "result0")
+    assert(get("/test?p0=v1") === "result1")
 
-    verify(serverHandler).get(requestOf("/test", params = Map("k1" -> Seq("v1"))))
-    verify(serverHandler).get(requestOf("/test", params = Map("k1" -> Seq("v2"))))
+    verify(serverHandler).get(requestOf("/test", params = Set("p0" -> "v0")))
+    verify(serverHandler).get(requestOf("/test", params = Set("p0" -> "v1")))
   }
 
   test("post を stub/verify できる") {
@@ -101,8 +99,8 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
   }
 
   test("post のパラメータを stub/verify できる") {
-    when(serverHandler.post(requestOf("/test", Map("k1" -> Seq("v1"))))).thenReturn("result1")
-    when(serverHandler.post(requestOf("/test", Map("k1" -> Seq("v2"))))).thenReturn("result2")
+    when(serverHandler.post(requestOf("/test", params = Set("k1" -> "v1")))).thenReturn("result1")
+    when(serverHandler.post(requestOf("/test", params = Set("k1" -> "v2")))).thenReturn("result2")
 
     // client code
     assert(post("/test", Map("k1" -> "v1")) === "result1")
@@ -110,7 +108,7 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
   }
 
   test("パラメータを stub/verify は部分マッチ") {
-    when(serverHandler.post(requestOf("/test", Map("k1" -> Seq("v1"))))).thenReturn("result1")
+    when(serverHandler.post(requestOf("/test", params = Set("k1" -> "v1")))).thenReturn("result1")
 
     // client code
     // when の条件外のパラメータは無視される
@@ -147,8 +145,8 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
   }
 
   test("request header を stub/verify できる") {
-    when(serverHandler.post(requestOf("/test", headers = Map("H1" -> Seq("V2"))))).thenReturn("result2")
-    when(serverHandler.post(requestOf("/test", headers = Map("H1" -> Seq("V1"))))).thenReturn("result1")
+    when(serverHandler.post(requestOf("/test", headers = Set("H1" -> "V2")))).thenReturn("result2")
+    when(serverHandler.post(requestOf("/test", headers = Set("H1" -> "V1")))).thenReturn("result1")
 
     // client code
     assert(post("/test", headers = Map("H1" -> "V1")) === "result1")

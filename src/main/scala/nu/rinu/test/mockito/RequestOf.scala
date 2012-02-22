@@ -9,7 +9,8 @@ import nu.rinu.test.Request
  *
  * @param headers 指定したヘッダーがすべて、リクエストに含まれているならマッチする
  */
-class RequestOf(url: String, params: Map[String, Seq[String]] = Map(), headers: Map[String, Seq[String]] = Map()) extends ArgumentMatcher[Request] {
+class RequestOf(url: String, params: Set[(String, String)], headers: Set[(String, String)]) extends ArgumentMatcher[Request] {
+
   def matches(a: Any) = {
     val request = a.asInstanceOf[Request]
 
@@ -18,22 +19,21 @@ class RequestOf(url: String, params: Map[String, Seq[String]] = Map(), headers: 
       matchesParams(request) &&
       matchesHeaders(request)
   }
-  private def matchesParams(request: Request) =
-    if (params.isEmpty) {
+  private def matchesParams(request: Request) = matches(params, request.params)
+
+  private def matchesHeaders(request: Request) = matches(headers, request.headers)
+
+  private def matches(exptected: Set[(String, String)], actual: Map[String, Seq[String]]) = {
+    if (exptected.isEmpty) {
       true
     } else {
-      params.forall(kv => request.params(kv._1) == kv._2)
+      exptected.forall(kv =>
+        actual.getOrElse(kv._1, Seq()).contains(kv._2))
     }
-
-  private def matchesHeaders(request: Request) =
-    if (headers.isEmpty) {
-      true
-    } else {
-      headers.forall(kv => request.headers(kv._1) == kv._2)
-    }
-
+  }
 }
 
 object RequestOf {
-  def requestOf(url: String, params: Map[String, Seq[String]] = Map(), headers: Map[String, Seq[String]] = Map()) = argThat(new RequestOf(url, params, headers))
+  def requestOf(url: String, params: Set[(String, String)] = Set(), headers: Set[(String, String)] = Set()) =
+    argThat(new RequestOf(url, params, headers))
 }
