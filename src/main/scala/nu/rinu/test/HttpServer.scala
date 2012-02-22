@@ -8,18 +8,6 @@ import org.eclipse.jetty.server.{ Request => JRequest }
 import scala.collection.JavaConverters._
 import org.slf4j.LoggerFactory
 
-/**
- * モック用途を想定した HttpServer
- *
- * == 設計方針 ==
- *  - なるべくシンプルに
- *  - Scala との親和性を高く
- *  - mock ライブラリには依存しない
- *  - mockito のような verify ができる
- *    - mockito 等とうまく連携できるといい
- *  - ナマの HTTP も確認できる
- *  - テスト中は起動しっぱなしにできる
- */
 class HttpServer(port: Int, var handler: HttpServerHandler = null) {
   val logger = LoggerFactory.getLogger(classOf[HttpServer])
 
@@ -31,7 +19,6 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
   logger.debug("start: " + url)
 
   private implicit def toScala(from: java.util.Map[String, Array[String]]): Map[String, Seq[String]] = {
-    // TODO これもっとシンプルにできないかなぁ
     from.asScala.toMap.map(a => (a._1, a._2.toSeq))
   }
 
