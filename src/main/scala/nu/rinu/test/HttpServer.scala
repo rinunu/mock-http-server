@@ -89,14 +89,14 @@ object Method extends Enumeration {
   val Delete = Value("delete")
 }
 
-case class Response(statusCode: Int = 200, body: String = "", headers: Map[String, Seq[String]] = Map()) {
-}
-
 /**
  * 設計
  * HttpServletRequest は verify のタイミングでアクセス出来なかったため、 immutable な独自のオブジェクトとする
  */
 case class Request(method: Method.Value, url: String, params: Map[String, Seq[String]] = Map(), headers: Map[String, Seq[String]] = Map()) {
+}
+
+case class Response(statusCode: Int = 200, body: String = "", headers: Map[String, Seq[String]] = Map()) {
 }
 
 object Response {
