@@ -1,16 +1,20 @@
 package nu.rinu.test.mockito
 
+import org.hamcrest.BaseMatcher
+import org.hamcrest.Description
 import org.mockito.Matchers.argThat
-import org.mockito.ArgumentMatcher
+
 import nu.rinu.test.Request
 
 /**
- * mockito 用の Matcher
+ * hamcrest 用の Matcher
+ *
+ * Mockito etc. とともに使用できる。
  *
  * @param params 指定したパラメータがすべて、リクエストに含まれているならマッチする
  * @param headers 指定したヘッダーがすべて、リクエストに含まれているならマッチする
  */
-class RequestOf(url: String, params: Set[(String, String)], headers: Set[(String, String)]) extends ArgumentMatcher[Request] {
+class RequestOf(url: String, params: Set[(String, String)], headers: Set[(String, String)]) extends BaseMatcher[Request] {
 
   def matches(a: Any) = {
     val request = a.asInstanceOf[Request]
@@ -20,6 +24,17 @@ class RequestOf(url: String, params: Set[(String, String)], headers: Set[(String
       matchesParams(request) &&
       matchesHeaders(request)
   }
+
+  def describeTo(description: Description) {
+    description.appendText("url=" + url + ",")
+    if (!params.isEmpty) {
+      description.appendText("params=" + params + ",")
+    }
+    if (!headers.isEmpty) {
+      description.appendText("headers=" + headers + ",")
+    }
+  }
+
   private def matchesParams(request: Request) = matches(params, request.params)
 
   private def matchesHeaders(request: Request) = matches(headers, request.headers)
