@@ -14,7 +14,7 @@ class HttpServer(port: Int, var handler: HttpServerHandler = null) {
   val impl = new Server(port)
   impl.setStopAtShutdown(true)
 
-  def url = "http://localhost:" + port
+  def url = "http://localhost:" + impl.getConnectors()(0).getLocalPort
 
   logger.debug("start: " + url)
 

@@ -57,7 +57,7 @@ class HttpServerTest extends FunSuite with MockitoSugar with BeforeAndAfterEach 
 
   override protected def beforeEach() {
     serverHandler = mock[HttpServerHandler]
-    server = new HttpServer(7987)
+    server = new HttpServer(0)
     server.handler = serverHandler
 
     httpclient = new DefaultHttpClient
