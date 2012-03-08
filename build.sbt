@@ -48,13 +48,3 @@ pomExtra :=
     <url>https://github.com/rinunu</url>
   </developer>
 </developers>
-
-
-
-
-// Central Sync Requirement
-// todo
-// <url>
-// -javadoc.jar for main artifact.
-// -sources.jar
-// GPG
