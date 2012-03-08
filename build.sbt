@@ -22,8 +22,11 @@ libraryDependencies ++= {
 
 seq(sbtrelease.Release.releaseSettings: _*)
 
+licenses := Seq("BSD-style" -> url("http://www.opensource.org/licenses/bsd-license.php"))
+
+homepage := Some(url("https://github.com/rinunu/mock-http-server"))
+
 pomExtra :=
-<url>https://github.com/rinunu/mock-http-server</url>
 <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
@@ -34,13 +37,6 @@ pomExtra :=
   <developerConnection>scm:git:git@github.com:rinunu/mock-http-server.git</developerConnection>
   <url>git@github.com:rinunu/mock-http-server.git</url>
 </scm>
-<licenses>
-  <license>
-    <name>BSD-style</name>
-    <url>http://www.opensource.org/licenses/bsd-license.php</url>
-    <distribution>repo</distribution>
-  </license>
-</licenses>
 <developers>
   <developer>
     <id>rinunu</id>
